@@ -1,3 +1,10 @@
+// Check if user is logged in
+function checkAuthentication() {
+    if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+        window.location.href = 'login.html';
+    }
+}
+
 // Data storage
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let chart = null;
@@ -8,18 +15,39 @@ const typeSelect = document.getElementById('type');
 const descriptionInput = document.getElementById('description');
 const addBtn = document.getElementById('addBtn');
 const resetBtn = document.getElementById('resetBtn');
+const logoutBtn = document.getElementById('logoutBtn');
 const balanceDisplay = document.getElementById('balance');
 const totalIncomeDisplay = document.getElementById('totalIncome');
 const totalExpenseDisplay = document.getElementById('totalExpense');
 const historyList = document.getElementById('historyList');
+const usernameDisplay = document.getElementById('usernameDisplay');
 const ctx = document.getElementById('savingsChart').getContext('2d');
 
 // Event Listeners
 addBtn.addEventListener('click', addTransaction);
 resetBtn.addEventListener('click', resetData);
+if (logoutBtn) logoutBtn.addEventListener('click', logout);
 amountInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') addTransaction();
 });
+
+// Logout Function
+function logout() {
+    if (confirm('Apakah Anda yakin ingin keluar?')) {
+        sessionStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('username');
+        sessionStorage.removeItem('loginTime');
+        window.location.href = 'login.html';
+    }
+}
+
+// Display Username
+function displayUsername() {
+    const username = sessionStorage.getItem('username');
+    if (usernameDisplay && username) {
+        usernameDisplay.textContent = username;
+    }
+}
 
 // Add Transaction
 function addTransaction() {
@@ -238,6 +266,8 @@ function resetData() {
 
 // Initialize on load
 window.addEventListener('load', () => {
+    checkAuthentication();
+    displayUsername();
     updateUI();
     amountInput.focus();
 });
